@@ -189,10 +189,27 @@ def ida(start):
     limit = 1
     while True:
         ans = dlst(start, limit)
+        print(ans)
         if not ans:
-            limit += 1
-        else:
             return
+        else:
+            nodecount += ans[0]
+            if ans[1] > max_search_depth:
+                max_search_depth = ans[1]
+            if ans[2] > max_fringe_size:
+                max_fringe_size = ans[2]
+            if len(ans) > 3:
+                fil = open('output', 'w')
+                fil.write("path_to_goal: "+str(ans[5]))
+                fil.write("\ncost_of_path: "+str(ans[3]))
+                fil.write("\nnodes_expanded: "+str(nodecount))
+                fil.write("\nfringe_size: "+str(ans[4]))
+                fil.write("\nmax_fringe_size: "+str(max_fringe_size))
+                fil.write("\nsearch_depth: "+str(ans[3]))
+                fil.write("\nmax_search_depth: "+str(max_search_depth))
+                fil.write("\nrunning_time: "+str(time.process_time()))
+                return
+            limit += 1
 
 def dlst(start, limit):
     """depth-limited-search"""
@@ -206,13 +223,14 @@ def dlst(start, limit):
     search.put((dist(start), (start, 0)))
     while search:
         sdist = search.get()
+        print(limit)
         state = sdist[1]
         nodecount += 1
         if state[1] > max_search_depth:
             max_search_depth = state[1]
         visited.add(state[0])
         if state[0] == ('0', '1', '2', '3', '4', '5', '6', '7', '8'):
-            fil = open('output', 'w')
+            print("-----------------------------------------------------------")
             path = []
             ind = nodes.index(('0', '1', '2', '3', '4', '5', '6', '7', '8'))
             dif = parents[ind].index('0') - nodes[ind].index('0')
@@ -236,15 +254,7 @@ def dlst(start, limit):
                 if dif == -3:
                     path.append("DOWN")
             path.reverse()
-            fil.write("path_to_goal: "+str(path))
-            fil.write("\ncost_of_path: "+str(state[1]))
-            fil.write("\nnodes_expanded: "+str(nodecount-1))
-            fil.write("\nfringe_size: "+str(search.qsize()))
-            fil.write("\nmax_fringe_size: "+str(max_fringe_size))
-            fil.write("\nsearch_depth: "+str(state[1]))
-            fil.write("\nmax_search_depth: "+str(max_search_depth))
-            fil.write("\nrunning_time: "+str(time.process_time()))
-            return True
+            return (nodecount - 1, max_search_depth, max_fringe_size, state[1], search.qsize(), path)
         if state[1] < limit:
             for i in neighbors(state[0]):
                 if not i in visited:
@@ -255,8 +265,8 @@ def dlst(start, limit):
         if search.qsize() > max_fringe_size:
             max_fringe_size = search.qsize()
         if nodecount >= 181440:
-            return True
-    return False
+            return False
+    return (nodecount - 1, max_search_depth, max_fringe_size)
 
 def dist(confi):
     """computes priority for each node"""
@@ -302,4 +312,3 @@ if sys.argv[1] == "ast":
     ast(tuple(sys.argv[2].split(",")))
 if sys.argv[1] == "ida":
     ida(tuple(sys.argv[2].split(",")))
-dlst(tuple(sys.argv[1].split(",")), 3)
