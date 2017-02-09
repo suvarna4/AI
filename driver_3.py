@@ -230,7 +230,7 @@ def dlst(start, limit):
         if state[1] > max_search_depth:
             max_search_depth = state[1]
         visited.add(state[0])
-        if state[0] == ('0', '1', '2', '3', '4', '5', '6', '7', '8')
+        if state[0] == ('0', '1', '2', '3', '4', '5', '6', '7', '8'):
             path = []
             ind = nodes.index(('0', '1', '2', '3', '4', '5', '6', '7', '8'))
             dif = parents[ind].index('0') - nodes[ind].index('0')
