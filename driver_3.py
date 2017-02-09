@@ -75,7 +75,7 @@ def dfs(start):
     nodes = []
     parents = []
     search.put((start, 0))
-    while search:
+    while not search.empty():
         state = search.get()
         nodecount += 1
         if state[1] > max_search_depth:
@@ -186,10 +186,12 @@ def ast(start):
 
 def ida(start):
     """iterative-deepening-search"""
+    nodecount = 0
+    max_search_depth = 0
+    max_fringe_size = 0
     limit = 1
     while True:
         ans = dlst(start, limit)
-        print(ans)
         if not ans:
             return
         else:
@@ -221,16 +223,14 @@ def dlst(start, limit):
     max_search_depth = 0
     max_fringe_size = 1
     search.put((dist(start), (start, 0)))
-    while search:
+    while not search.empty():
         sdist = search.get()
-        print(limit)
         state = sdist[1]
         nodecount += 1
         if state[1] > max_search_depth:
             max_search_depth = state[1]
         visited.add(state[0])
-        if state[0] == ('0', '1', '2', '3', '4', '5', '6', '7', '8'):
-            print("-----------------------------------------------------------")
+        if state[0] == ('0', '1', '2', '3', '4', '5', '6', '7', '8')
             path = []
             ind = nodes.index(('0', '1', '2', '3', '4', '5', '6', '7', '8'))
             dif = parents[ind].index('0') - nodes[ind].index('0')
@@ -254,7 +254,7 @@ def dlst(start, limit):
                 if dif == -3:
                     path.append("DOWN")
             path.reverse()
-            return (nodecount - 1, max_search_depth, max_fringe_size, state[1], search.qsize(), path)
+            return (nodecount-1, max_search_depth, max_fringe_size, state[1], search.qsize(), path)
         if state[1] < limit:
             for i in neighbors(state[0]):
                 if not i in visited:
