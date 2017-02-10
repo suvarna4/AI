@@ -1,8 +1,8 @@
-path_to_goal: ['UP', 'UP', 'LEFT', 'LEFT']
-cost_of_path: 4
-nodes_expanded: 26
-fringe_size: 3
-max_fringe_size: 5
-search_depth: 4
-max_search_depth: 4
-running_time: 0.1092007
+path_to_goal: ['UP', 'LEFT', 'LEFT']
+cost_of_path: 3
+nodes_expanded: 3
+fringe_size: 1
+max_fringe_size: 2
+search_depth: 3
+max_search_depth: 3
+running_time: 0.046800299999999996

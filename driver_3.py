@@ -186,46 +186,38 @@ def ast(start):
 
 def ida(start):
     """iterative-deepening-search"""
-    nodecount = 0
-    max_search_depth = 0
-    max_fringe_size = 0
     limit = 1
     while True:
         ans = dlst(start, limit)
         if not ans:
             return
         else:
-            nodecount += ans[0]
-            if ans[1] > max_search_depth:
-                max_search_depth = ans[1]
-            if ans[2] > max_fringe_size:
-                max_fringe_size = ans[2]
             if len(ans) > 3:
                 fil = open('output', 'w')
                 fil.write("path_to_goal: "+str(ans[5]))
                 fil.write("\ncost_of_path: "+str(ans[3]))
-                fil.write("\nnodes_expanded: "+str(nodecount))
+                fil.write("\nnodes_expanded: "+str(ans[0]))
                 fil.write("\nfringe_size: "+str(ans[4]))
-                fil.write("\nmax_fringe_size: "+str(max_fringe_size))
+                fil.write("\nmax_fringe_size: "+str(ans[2]))
                 fil.write("\nsearch_depth: "+str(ans[3]))
-                fil.write("\nmax_search_depth: "+str(max_search_depth))
+                fil.write("\nmax_search_depth: "+str(ans[1]))
                 fil.write("\nrunning_time: "+str(time.process_time()))
                 return
             limit += 1
 
 def dlst(start, limit):
     """depth-limited-search"""
-    search = PriorityQueue(maxsize=0)
+    search = LifoQueue(maxsize=0)
     visited = set()
     nodecount = 0
     nodes = []
     parents = []
     max_search_depth = 0
     max_fringe_size = 1
-    search.put((dist(start), (start, 0)))
+    mindist = dist(start)
+    search.put((start, 0))
     while not search.empty():
-        sdist = search.get()
-        state = sdist[1]
+        state = search.get()
         nodecount += 1
         if state[1] > max_search_depth:
             max_search_depth = state[1]
@@ -255,13 +247,14 @@ def dlst(start, limit):
                     path.append("DOWN")
             path.reverse()
             return (nodecount-1, max_search_depth, max_fringe_size, state[1], search.qsize(), path)
-        if state[1] < limit:
-            for i in neighbors(state[0]):
-                if not i in visited:
-                    search.put((dist(i), (i, state[1]+1)))
-                    visited.add(i)
-                    nodes.append(i)
-                    parents.append(state[0])
+        for i in reversed(neighbors(state[0])):
+            if not i in visited and dist(i) < (mindist + limit):
+                if dist(i) < mindist:
+                    mindist = dist(i)
+                search.put((i, state[1]+1))
+                visited.add(i)
+                nodes.append(i)
+                parents.append(state[0])
         if search.qsize() > max_fringe_size:
             max_fringe_size = search.qsize()
         if nodecount >= 181440:
